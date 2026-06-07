@@ -22,7 +22,7 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: process.env.FRONTEND_URL || '*',
     credentials: true,
   })
 );
@@ -47,13 +47,10 @@ const globalLimiter = rateLimit({
 
 app.use('/api/', globalLimiter);
 
-// Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/urls', require('./routes/urls'));
-app.use('/api/analytics', require('./routes/analytics'));
-
-// Redirect Route
-app.use('/', require('./routes/redirect'));
+// Home Route
+app.get('/', (req, res) => {
+  res.send('🚀 LinkForge Backend is running!');
+});
 
 // Health Check
 app.get('/health', (req, res) => {
@@ -62,6 +59,14 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+// API Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/urls', require('./routes/urls'));
+app.use('/api/analytics', require('./routes/analytics'));
+
+// Redirect Route
+app.use('/', require('./routes/redirect'));
 
 // 404 Handler
 app.use((req, res) => {
@@ -80,13 +85,14 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(
-    `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`
+    `🚀 Server running on port ${PORT} in ${
+      process.env.NODE_ENV || 'development'
+    } mode`
   );
 });
 
-// Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
   console.error('Unhandled Rejection:', err.message);
 

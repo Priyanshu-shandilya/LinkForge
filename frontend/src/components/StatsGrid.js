@@ -12,7 +12,7 @@ const StatsGrid = ({ stats }) => (
       </div>
     ))}
   </div>
-);
+); 
 
 const styles = {
   grid: {
